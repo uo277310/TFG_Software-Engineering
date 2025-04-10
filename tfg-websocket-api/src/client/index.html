@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitor de Precios - TFG</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body id="app" class="bg-gray-900 text-white font-sans p-5 transition-colors duration-300">
+
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">📈 Monitor de Precios en Tiempo Real</h1>
+        <button id="themeToggle" onclick="toggleTheme()" class="bg-blue-500 p-2 rounded">
+            🌙 Modo Oscuro
+        </button>
+    </div>
+
+    <div class="flex justify-center mb-8 space-x-4">
+        <select id="categorySelect" class="p-2 rounded bg-gray-700 text-white" onchange="updateSymbolOptions()">
+            <option value="stocks">📊 Acciones</option>
+            <option value="crypto">₿ Criptomonedas</option>
+            <option value="forex">💱 Divisas</option>
+        </select>
+        <select id="symbolSelect" class="p-2 rounded bg-gray-700 text-white"></select>
+        <button id="subscribeBtn" onclick="subscribe()" class="ml-2 bg-blue-500 p-2 rounded active:scale-95 transition-all duration-200">➕ Suscribir</button>
+    </div>
+
+    <div id="categoriesContainer">
+        <h2 class="text-2xl font-semibold mb-4">📊 Acciones</h2>
+        <div id="stocksContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10"></div>
+
+        <h2 class="text-2xl font-semibold mb-4">₿ Criptomonedas</h2>
+        <div id="cryptoContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10"></div>
+
+        <h2 class="text-2xl font-semibold mb-4">💱 Divisas</h2>
+        <div id="forexContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- Consola visual -->
+    <div id="websocketConsole" class="fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 text-green-400 text-sm font-mono z-50 transition-all duration-300">
+        <div class="flex justify-between items-center p-2 border-b border-gray-700">
+            <strong>📱 Consola WebSocket</strong>          
+            <button onclick="toggleConsole()" id="consoleToggleBtn" class="text-white bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 text-xs">
+                🔽 Minimizar
+            </button>
+        </div>
+        <div id="consoleBody" class="p-2 h-36 overflow-y-auto"></div>
+        <button onclick="scrollDown()" id="scrollToBottomBtn" class="fixed bottom-5 right-5 p-3 bg-blue-500 text-white bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 text-xs hidden">
+            ⬇️
+        </button>
+    </div>
+
+    <div class="h-60"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

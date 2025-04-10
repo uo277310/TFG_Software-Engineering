@@ -1,0 +1,23 @@
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+#websocketConsole {
+    transition: all 0.3s ease;
+}
+
+.price {
+    font-weight: bold;
+}
+
+.price.up {
+    color: green;
+}
+
+.price.down {
+    color: red;
+}
+
+.price.same {
+    color: gray;
+}
