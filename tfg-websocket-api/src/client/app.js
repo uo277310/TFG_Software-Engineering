@@ -96,13 +96,26 @@ function updateSubscriptionUIState() {
 
 // Returns the next category that still has unsubscribed symbols
 function getNextAvailableCategory(currentCategory) {
+    // Define the order of categories
     const categories = ['stocks', 'crypto', 'forex'];
+    // Get the index of the current category
     const currentIndex = categories.indexOf(currentCategory);
+    
+    // Look for available symbols in the categories after the current one
     for (let i = currentIndex + 1; i < categories.length; i++) {
         if (symbolsByCategory[categories[i]].some(symbol => !subscribedSymbols.includes(symbol))) {
             return categories[i];
         }
     }
+    
+    // If none found, search from the beginning to the current category
+    for (let i = 0; i < currentIndex; i++) {
+        if (symbolsByCategory[categories[i]].some(symbol => !subscribedSymbols.includes(symbol))) {
+            return categories[i];
+        }
+    }
+    
+    // Return null if no available category is found
     return null;
 }
 
