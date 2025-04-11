@@ -13,6 +13,7 @@
 # TFG - Software Engineering
 
 **Author:** Luis Miguel Gómez del Cueto  
+**Contact:** luismigmez@gmail.com  
 **University:** Universidad de Oviedo  
 **Title:** Real-Time Price Monitoring Using WebSockets  
 **Year:** 2025  
