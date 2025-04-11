@@ -19,9 +19,18 @@ const priceHistory = {};
 
 // Symbols grouped by category
 const symbolsByCategory = {
-    stocks: ["AAPL", "GOOGL", "TSLA", "AMZN", "MSFT"],
-    crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "ADA-USD", "XRP-USD"],
-    forex: ["EURUSD=X", "GBPUSD=X", "USDJPY=X", "USDCAD=X", "AUDUSD=X"]
+    stocks: [
+        "AAPL", "GOOGL", "TSLA", "AMZN", "MSFT",
+        "NFLX", "BABA", "NVDA", "META", "INTC"
+    ],
+    crypto: [
+        "BTC-USD", "ETH-USD", "SOL-USD", "ADA-USD", "XRP-USD",
+        "DOGE-USD", "DOT-USD", "MATIC-USD"
+    ],
+    forex: [
+        "EURUSD=X", "GBPUSD=X", "USDJPY=X", "USDCAD=X", "AUDUSD=X",
+        "NZDUSD=X", "USDCHF=X"
+    ]
 };
 
 // Keeps track of all currently subscribed symbols

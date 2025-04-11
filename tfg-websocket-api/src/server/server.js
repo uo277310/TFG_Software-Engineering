@@ -11,8 +11,11 @@
  * All rights reserved.
  */
 
+const UPDATE_INTERVAL = 5000; // Update interval in milliseconds
+
 const WebSocket = require('ws');
 const yahooFinance = require('yahoo-finance2').default;
+yahooFinance.suppressNotices(['yahooSurvey']);
 
 // Create a WebSocket server running on port 3000
 const wss = new WebSocket.Server({ port: 3000 });
@@ -35,12 +38,12 @@ wss.on('connection', (ws) => {
     
             if (action === 'subscribe' && symbol) {
                 console.log(`Client subscribed to: ${symbol}`);
-                clients.get(ws).add(symbol); // Agrega símbolo
+                clients.get(ws).add(symbol); // Add symbol to client's subscriptions
             }
     
             if (action === 'unsubscribe' && symbol) {
                 console.log(`Client unsubscribed from: ${symbol}`);
-                clients.get(ws).delete(symbol); // Elimina símbolo
+                clients.get(ws).delete(symbol); // Remove symbol from client's subscriptions
             }
     
         } catch (error) {
@@ -75,5 +78,5 @@ async function fetchAndBroadcast() {
     }
 }
 
-// Set an interval to fetch and broadcast prices every 5 seconds
-setInterval(fetchAndBroadcast, 5000);
+// Set an interval to fetch and broadcast prices every UPDATE_INTERVAL milliseconds
+setInterval(fetchAndBroadcast, UPDATE_INTERVAL);
