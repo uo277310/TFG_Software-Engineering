@@ -1,57 +1,74 @@
-// server.js
+/*
+ * Author: Luis Miguel Gómez del Cueto
+ * Final Degree Project – Software Engineering
+ * University of Oviedo
+ * Title: Real-Time Price Monitoring Using WebSockets
+ * Description: This file is part of the final project that implements a WebSocket-based API 
+ *              to optimize client-server interaction by avoiding polling.
+ * Year: 2025
+ * Version: 1.0
+ * All rights reserved.
+ */
+
 const WebSocket = require('ws');
 const yahooFinance = require('yahoo-finance2').default;
 
+// Create a WebSocket server running on port 3000
 const wss = new WebSocket.Server({ port: 3000 });
-console.log('Servidor WebSocket corriendo en ws://localhost:3000');
+console.log('WebSocket server running on ws://localhost:3000');
 
-const clients = new Map(); // Mapear clientes a sus suscripciones
+// Map to track clients and their subscriptions
+const clients = new Map(); // Map clients to their subscriptions
 
-// Manejar conexiones WebSocket
+// Handle WebSocket connections
 wss.on('connection', (ws) => {
-    console.log('Cliente conectado');
+    console.log('Client connected');
 
-    // Inicializar suscripciones vacías para el cliente
+    // Initialize empty subscriptions for the client
     clients.set(ws, new Set());
 
+    // Handle incoming messages from clients
     ws.on('message', async (message) => {
         try {
-            const { action, symbol } = JSON.parse(message);
+            const { action, symbol } = JSON.parse(message); // Parse the incoming message
 
             if (action === 'subscribe' && symbol) {
-                console.log(`Cliente suscrito a: ${symbol}`);
+                console.log(`Client subscribed to: ${symbol}`);
 
-                // Añadir el símbolo a las suscripciones del cliente
+                // Add the symbol to the client's subscription list
                 clients.get(ws).add(symbol);
             }
         } catch (error) {
-            console.error('Error al procesar el mensaje:', error);
+            console.error('Error processing message:', error);
         }
     });
 
+    // Handle client disconnection
     ws.on('close', () => {
-        console.log('Cliente desconectado');
-        clients.delete(ws);
+        console.log('Client disconnected');
+        clients.delete(ws); // Remove client from the map when disconnected
     });
 });
 
-// Obtener precios y enviar actualizaciones a los clientes
+// Function to fetch prices and broadcast them to the connected clients
 async function fetchAndBroadcast() {
     for (const [client, symbols] of clients.entries()) {
         for (const symbol of symbols) {
             try {
+                // Get the latest price for each subscribed symbol using Yahoo Finance API
                 const result = await yahooFinance.quote(symbol);
-                const price = result.regularMarketPrice;
+                const price = result.regularMarketPrice; // Extract the price
 
                 if (price) {
+                    // Send the updated price to the client
                     client.send(JSON.stringify({ symbol, price }));
                 }
             } catch (error) {
-                console.error(`Error al obtener datos de ${symbol}:`, error.message);
+                console.error(`Error fetching data for ${symbol}:`, error.message);
             }
         }
     }
 }
 
-// Consultar precios cada 5 segundos
+// Set an interval to fetch and broadcast prices every 5 seconds
 setInterval(fetchAndBroadcast, 5000);

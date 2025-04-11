@@ -1,3 +1,15 @@
+<!-- 
+   Author: Luis Miguel Gómez del Cueto
+   Final Degree Project – Software Engineering
+   University of Oviedo
+   Title: Real-Time Price Monitoring Using WebSockets
+   Description: This file is part of the final project that implements a WebSocket-based API
+                to optimize client-server interaction by avoiding polling.
+   Year: 2025
+   Version: 1.0
+   All rights reserved.
+-->
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -26,7 +38,8 @@
             <option value="forex">💱 Divisas</option>
         </select>
         <select id="symbolSelect" class="p-2 rounded bg-gray-700 text-white"></select>
-        <button id="subscribeBtn" onclick="subscribe()" class="ml-2 bg-blue-500 p-2 rounded active:scale-95 transition-all duration-200">➕ Suscribir</button>
+        <button id="subscribeBtn" onclick="subscribe()" 
+            class="ml-2 bg-blue-500 p-2 rounded active:scale-95 transition-all duration-200">➕ Suscribir</button>
     </div>
 
     <div id="categoriesContainer">
@@ -40,18 +53,16 @@
         <div id="forexContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </div>
 
-    <!-- Consola visual -->
+    <!-- Visual console -->
     <div id="websocketConsole" class="fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 text-green-400 text-sm font-mono z-50 transition-all duration-300">
         <div class="flex justify-between items-center p-2 border-b border-gray-700">
             <strong>📱 Consola WebSocket</strong>          
-            <button onclick="toggleConsole()" id="consoleToggleBtn" class="text-white bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 text-xs">
-                🔽 Minimizar
-            </button>
+            <button onclick="toggleConsole()" id="consoleToggleBtn" 
+                class="text-white bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 text-xs">🔽 Minimizar</button>
         </div>
         <div id="consoleBody" class="p-2 h-36 overflow-y-auto"></div>
-        <button onclick="scrollDown()" id="scrollToBottomBtn" class="fixed bottom-5 right-5 p-3 bg-blue-500 text-white bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 text-xs hidden">
-            ⬇️
-        </button>
+        <button onclick="scrollDown()" id="scrollToBottomBtn" 
+            class="fixed bottom-5 right-5 p-3 bg-blue-500 text-white bg-gray-700 px-2 py-1 rounded hover:bg-gray-600 text-xs hidden">⬇️</button>
     </div>
 
     <div class="h-60"></div>

@@ -1,23 +1,43 @@
+/*
+ * Author: Luis Miguel Gómez del Cueto
+ * Final Degree Project – Software Engineering
+ * University of Oviedo
+ * Title: Real-Time Price Monitoring Using WebSockets
+ * Description: This file is part of the final project that implements a WebSocket-based API
+ *              to optimize client-server interaction by avoiding polling.
+ * Year: 2025
+ * Version: 1.0
+ * All rights reserved.
+ */
+
+// Initialize WebSocket connection to the server
 const ws = new WebSocket('ws://localhost:3000');
+
+// Stores price history and chart references
 const priceHistory = {};
+
+// Symbols grouped by category
 const symbolsByCategory = {
     stocks: ["AAPL", "GOOGL", "TSLA", "AMZN", "MSFT"],
     crypto: ["BTC-USD", "ETH-USD", "SOL-USD", "ADA-USD", "XRP-USD"],
     forex: ["EURUSD=X", "GBPUSD=X", "USDJPY=X", "USDCAD=X", "AUDUSD=X"]
 };
 
+// Keeps track of all currently subscribed symbols
 let subscribedSymbols = [];
 
+// Updates the available symbol options in the selector
 function updateSymbolOptions() {
     const categorySelect = document.getElementById('categorySelect');
     const symbolSelect = document.getElementById('symbolSelect');
     const currentCategory = categorySelect.value;
 
-    symbolSelect.innerHTML = ''; // Limpiar todas las opciones antes de volver a agregarlas
+    // Clear previous symbol options
+    symbolSelect.innerHTML = '';
 
     let hasSymbols = false;
 
-    // Añadir solo los símbolos que no han sido suscritos
+    // Only add symbols that are not already subscribed
     symbolsByCategory[currentCategory].forEach(symbol => {
         if (!subscribedSymbols.includes(symbol)) {
             const option = document.createElement('option');
@@ -28,56 +48,57 @@ function updateSymbolOptions() {
         }
     });
 
-    // Si no hay símbolos en la categoría seleccionada, intentar seleccionar otra categoría disponible
+    // If no symbols remain in this category, switch to the next available one
     if (!hasSymbols) {
-        // Buscar la siguiente categoría con símbolos no suscritos
         const nextCategory = getNextAvailableCategory(currentCategory);
         if (nextCategory) {
             categorySelect.value = nextCategory;
-            updateSymbolOptions(); // Vuelve a actualizar las opciones de símbolos con la nueva categoría seleccionada
+            updateSymbolOptions();
         } else {
-            // Si no hay categorías disponibles, eliminamos la opción del selector de categorías
-            categorySelect.value = ''; // Esto puede limpiar el selector o seleccionar el valor vacío
+            categorySelect.value = ''; // Clear selection if none are left
         }
     }
 
-    // Actualizar las opciones de categoría disponibles
-    updateCategoryOptions();
+    updateCategoryOptions(); // Refresh category list
 }
 
+// Returns the next category that still has unsubscribed symbols
 function getNextAvailableCategory(currentCategory) {
     const categories = ['stocks', 'crypto', 'forex'];
-    
-    // Encontramos la siguiente categoría disponible
     const currentIndex = categories.indexOf(currentCategory);
     for (let i = currentIndex + 1; i < categories.length; i++) {
         if (symbolsByCategory[categories[i]].some(symbol => !subscribedSymbols.includes(symbol))) {
             return categories[i];
         }
     }
-    return null; // Si no queda ninguna categoría disponible
+    return null;
 }
 
+// Updates the category options based on available symbols
 function updateCategoryOptions() {
     const categorySelect = document.getElementById('categorySelect');
     const categories = ['stocks', 'crypto', 'forex'];
 
-    // Eliminar las categorías que no tengan símbolos disponibles
     categories.forEach(category => {
         const option = categorySelect.querySelector(`option[value="${category}"]`);
-        if (!symbolsByCategory[category].some(symbol => !subscribedSymbols.includes(symbol))) {
-            if (option) option.remove(); // Eliminar la categoría si no hay símbolos disponibles
+        const hasAvailableSymbols = symbolsByCategory[category].some(
+            symbol => !subscribedSymbols.includes(symbol)
+        );
+
+        if (!hasAvailableSymbols) {
+            if (option) option.remove();
         } else {
             if (!option) {
                 const newOption = document.createElement('option');
                 newOption.value = category;
                 newOption.textContent = getCategoryLabel(category);
-                categorySelect.appendChild(newOption); // Añadir la opción de categoría si es válida
+                categorySelect.appendChild(newOption);
             }
         }
     });
 }
 
+// Returns display label for each category
 function getCategoryLabel(category) {
     switch (category) {
         case 'stocks':
@@ -91,26 +112,26 @@ function getCategoryLabel(category) {
     }
 }
 
+// Handles symbol subscription
 function subscribe() {
     const symbol = document.getElementById('symbolSelect').value;
     const category = document.getElementById('categorySelect').value;
 
     if (!subscribedSymbols.includes(symbol)) {
-        // Añadir el símbolo a la lista de suscritos
         subscribedSymbols.push(symbol);
-
-        // Actualizar las opciones disponibles
         updateSymbolOptions();
 
-        // Suscribir al WebSocket
+        // Notify server via WebSocket
         ws.send(JSON.stringify({ action: 'subscribe', symbol }));
         logToConsole(`🔔 Suscripción a ${symbol}`);
         createPriceSection(symbol, category);
     }
 }
 
-updateSymbolOptions(); // Inicializar las opciones al cargar la página
+// Populate initial symbol options when page loads
+updateSymbolOptions();
 
+// Adds a new UI section for displaying prices and chart
 function createPriceSection(symbol, category) {
     const container = document.getElementById(`${category}Container`);
     const section = document.createElement('div');
@@ -125,9 +146,12 @@ function createPriceSection(symbol, category) {
     `;
 
     container.appendChild(section);
+
+    // Store price data and chart object
     priceHistory[symbol] = { prices: [], chart: createChart(symbol) };
 }
 
+// Handle incoming messages from the WebSocket
 ws.onmessage = (event) => {
     const { symbol, price } = JSON.parse(event.data);
     if (priceHistory[symbol]) {
@@ -136,11 +160,12 @@ ws.onmessage = (event) => {
     }
 };
 
+// Creates and configures a Chart.js chart for a symbol
 function createChart(symbol) {
     const canvas = document.getElementById(`chart-${symbol}`);
     const ctx = canvas.getContext('2d');
-    
-    const chart = new Chart(ctx, {
+
+    return new Chart(ctx, {
         type: 'line',
         data: {
             labels: [],
@@ -161,7 +186,10 @@ function createChart(symbol) {
                 legend: { display: false }
             },
             scales: {
-                x: { display: true, ticks: { font: { size: 10 }, color: 'rgb(175, 192, 192)' } },
+                x: {
+                    display: true,
+                    ticks: { font: { size: 10 }, color: 'rgb(175, 192, 192)' }
+                },
                 y: {
                     display: true,
                     ticks: { font: { size: 10 }, color: 'rgb(175, 192, 192)' },
@@ -170,10 +198,9 @@ function createChart(symbol) {
             }
         }
     });
-
-    return chart;
 }
 
+// Updates the chart and its visual appearance based on price changes
 function updateChart(chart, newPrice, symbol) {
     const dataset = chart.data.datasets[0];
     const data = dataset.data;
@@ -183,26 +210,24 @@ function updateChart(chart, newPrice, symbol) {
     labels.push(now);
     data.push(newPrice);
 
-    // Inicializa pointBackgroundColor si no existe
-    if (!dataset.pointBackgroundColor) {
-        dataset.pointBackgroundColor = [];
-    }
-
+    // Determine price trend
     let trend = 'same';
     if (data.length > 1) {
         const prev = data[data.length - 2];
         trend = newPrice > prev ? 'up' : newPrice < prev ? 'down' : 'same';
     }
 
-    // Color del punto en función de la tendencia
+    // Assign color based on trend
     const pointColor = trend === 'up' ? 'rgb(0, 255, 0)' :
                        trend === 'down' ? 'rgb(255, 80, 80)' :
                        'rgb(175, 175, 175)';
 
     dataset.pointBackgroundColor = data.map(() => pointColor);
     dataset.pointBorderColor = data.map(() => pointColor);
+    dataset.borderColor = pointColor;
+    dataset.backgroundColor = pointColor.replace('rgb', 'rgba').replace(')', ', 0.2)');
 
-    // Limitar longitud para mantener 20 puntos
+    // Keep last 20 points only
     if (data.length > 20) {
         data.shift();
         labels.shift();
@@ -210,23 +235,17 @@ function updateChart(chart, newPrice, symbol) {
         dataset.pointBorderColor.shift();
     }
 
-    // También cambia el color de la línea
-    dataset.borderColor = trend === 'up' ? 'rgb(0, 255, 0)' :
-        trend === 'down' ? 'rgb(255, 80, 80)' : 'rgb(175, 175, 175)';
-
-    dataset.backgroundColor = trend === 'up' ? 'rgba(0, 255, 0, 0.2)' :
-        trend === 'down' ? 'rgba(255, 80, 80, 0.2)' : 'rgba(175, 175, 175, 0.2)';
-
     chart.update('none');
 
+    // Update the visual price text
     const infoDiv = document.getElementById(`info-${symbol}`);
     const priceSpan = infoDiv.querySelector('.price');
-
-    let arrow = trend === 'up' ? '🔼' : trend === 'down' ? '🔽' : '';
+    const arrow = trend === 'up' ? '🔼' : trend === 'down' ? '🔽' : '';
     priceSpan.innerHTML = `${newPrice.toFixed(2)} ${arrow}`;
     priceSpan.className = `price ${trend}`;
 }
 
+// Handles unsubscription and UI cleanup
 function unsubscribe(symbol) {
     if (priceHistory[symbol]) {
         ws.send(JSON.stringify({ action: 'unsubscribe', symbol }));
@@ -237,6 +256,7 @@ function unsubscribe(symbol) {
     }
 }
 
+// Switch between light/dark theme
 function toggleTheme() {
     const app = document.getElementById('app');
     const button = document.getElementById('themeToggle');
@@ -255,6 +275,7 @@ function toggleTheme() {
     }
 }
 
+// Loads theme preference from localStorage on startup
 (function loadTheme() {
     const savedTheme = localStorage.getItem('theme') || 'dark';
     const app = document.getElementById('app');
@@ -271,13 +292,14 @@ function toggleTheme() {
     }
 })();
 
+// Logging helper that groups logs every 5 seconds
 let lastLoggedBlock = null;
 function logToConsole(message) {
     const consoleBody = document.getElementById('consoleBody');
     const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
     const now = new Date();
     const currentSecond = now.getSeconds();
-    const currentBlock = Math.floor(currentSecond / 5); // Agrupación por bloques de 5s
+    const currentBlock = Math.floor(currentSecond / 5);
 
     const isAtBottom = consoleBody.scrollHeight == consoleBody.scrollTop + consoleBody.clientHeight;
 
@@ -300,20 +322,22 @@ function logToConsole(message) {
 
     if (isAtBottom) {
         consoleBody.scrollTop = consoleBody.scrollHeight;
-        scrollToBottomBtn.classList.add('hidden'); // Ocultar el botón
+        scrollToBottomBtn.classList.add('hidden');
     } else {
-        scrollToBottomBtn.classList.remove('hidden'); // Mostrar el botón
+        scrollToBottomBtn.classList.remove('hidden');
     }
 }
 
+// Scrolls the console to the bottom
 function scrollDown() {
     const consoleBody = document.getElementById('consoleBody');
     consoleBody.scrollTop = consoleBody.scrollHeight;
-    
+
     const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
     scrollToBottomBtn.classList.add('hidden');
-};
+}
 
+// Toggles visibility of the visual WebSocket console
 function toggleConsole() {
     const consoleDiv = document.getElementById('websocketConsole');
     const consoleBody = document.getElementById('consoleBody');
@@ -328,13 +352,13 @@ function toggleConsole() {
     } else {
         const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
         scrollToBottomBtn.classList.add('hidden');
-
         consoleBody.style.display = 'none';
         toggleBtn.textContent = '🔼 Maximizar';
         localStorage.setItem('consoleVisible', 'false');
     }
 }
 
+// Restore console visibility state from localStorage
 (function restoreConsoleState() {
     const visible = localStorage.getItem('consoleVisible');
     const consoleBody = document.getElementById('consoleBody');
