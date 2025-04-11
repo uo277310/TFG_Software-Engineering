@@ -377,7 +377,7 @@ function updateChart(chart, newPrice, symbol) {
 function unsubscribe(symbol) {
     if (priceHistory[symbol]) {
         ws.send(JSON.stringify({ action: 'unsubscribe', symbol }));
-        logToConsole(`❌ Unsubscribed from ${symbol}`);
+        logToConsole(`❌ Desuscrito de ${symbol}`);
         delete priceHistory[symbol];
         const section = document.getElementById(`section-${symbol}`);
         if (section) section.remove();
@@ -549,7 +549,6 @@ function scrollDown() {
 
 // Toggles visibility of the visual WebSocket console
 function toggleConsole() {
-    const consoleDiv = document.getElementById('websocketConsole');
     const consoleBody = document.getElementById('consoleBody');
     const toggleBtn = document.getElementById('consoleToggleBtn');
 
