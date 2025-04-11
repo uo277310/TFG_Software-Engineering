@@ -1,5 +1,6 @@
 /*
  * Author: Luis Miguel Gómez del Cueto
+ * Contact: luismigmez@gmail.com
  * Final Degree Project – Software Engineering
  * University of Oviedo
  * Title: Real-Time Price Monitoring Using WebSockets
@@ -31,17 +32,21 @@ wss.on('connection', (ws) => {
     ws.on('message', async (message) => {
         try {
             const { action, symbol } = JSON.parse(message); // Parse the incoming message
-
+    
             if (action === 'subscribe' && symbol) {
                 console.log(`Client subscribed to: ${symbol}`);
-
-                // Add the symbol to the client's subscription list
-                clients.get(ws).add(symbol);
+                clients.get(ws).add(symbol); // Agrega símbolo
             }
+    
+            if (action === 'unsubscribe' && symbol) {
+                console.log(`Client unsubscribed from: ${symbol}`);
+                clients.get(ws).delete(symbol); // Elimina símbolo
+            }
+    
         } catch (error) {
             console.error('Error processing message:', error);
         }
-    });
+    });    
 
     // Handle client disconnection
     ws.on('close', () => {

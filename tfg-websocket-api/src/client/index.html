@@ -1,5 +1,6 @@
 <!-- 
    Author: Luis Miguel Gómez del Cueto
+   Contact: luismigmez@gmail.com
    Final Degree Project – Software Engineering
    University of Oviedo
    Title: Real-Time Price Monitoring Using WebSockets
@@ -20,22 +21,28 @@
     <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Meta information -->
+    <meta name="author" content="Luis Miguel Gómez del Cueto">
+    <meta name="email" content="luismigmez@gmail.com">
+    <meta name="description" content="Real-Time Price Monitoring using WebSockets. Final Degree Project in Software Engineering at Universidad de Oviedo." />
+    <meta name="keywords" content="Price Monitoring, WebSockets, Real-Time, Software Engineering, Final Degree Project" />
 </head>
 
 <body id="app" class="bg-gray-900 text-white font-sans p-5 transition-colors duration-300">
 
+    <button id="themeToggle" onclick="toggleTheme()" class="fixed top-4 right-4 bg-blue-500 p-2 rounded z-50">
+        🌙 Modo Oscuro
+    </button>
+
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">📈 Monitor de Precios en Tiempo Real</h1>
-        <button id="themeToggle" onclick="toggleTheme()" class="bg-blue-500 p-2 rounded">
-            🌙 Modo Oscuro
-        </button>
     </div>
 
     <div class="flex justify-center mb-8 space-x-4">
         <select id="categorySelect" class="p-2 rounded bg-gray-700 text-white" onchange="updateSymbolOptions()">
-            <option value="stocks">📊 Acciones</option>
-            <option value="crypto">₿ Criptomonedas</option>
-            <option value="forex">💱 Divisas</option>
+            <option value="stocks">Acciones 📊</option>
+            <option value="crypto">Criptomonedas ₿</option>
+            <option value="forex">Divisas 💱</option>
         </select>
         <select id="symbolSelect" class="p-2 rounded bg-gray-700 text-white"></select>
         <button id="subscribeBtn" onclick="subscribe()" 
@@ -43,13 +50,13 @@
     </div>
 
     <div id="categoriesContainer">
-        <h2 class="text-2xl font-semibold mb-4">📊 Acciones</h2>
+        <h2 class="text-2xl font-semibold mb-4">Acciones 📊</h2>
         <div id="stocksContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10"></div>
 
-        <h2 class="text-2xl font-semibold mb-4">₿ Criptomonedas</h2>
+        <h2 class="text-2xl font-semibold mb-4">Criptomonedas ₿</h2>
         <div id="cryptoContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10"></div>
 
-        <h2 class="text-2xl font-semibold mb-4">💱 Divisas</h2>
+        <h2 class="text-2xl font-semibold mb-4">Divisas 💱</h2>
         <div id="forexContainer" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </div>
 
