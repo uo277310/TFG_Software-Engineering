@@ -1,0 +1,37 @@
+/*
+ * Author: Luis Miguel Gómez del Cueto
+ * Contact: luismigmez@gmail.com
+ * Final Degree Project – Software Engineering
+ * University of Oviedo
+ * Title: Real-Time Price Monitoring Using WebSockets
+ * Description: This file is part of the final project that implements a WebSocket-based API 
+ *              to optimize client-server interaction by avoiding polling.
+ * File: styles.css
+ * Year: 2025
+ * Version: 1.0
+ * All rights reserved.
+ */
+
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+#websocketConsole {
+    transition: all 0.3s ease;
+}
+
+.price {
+    font-weight: bold;
+}
+
+.price.up {
+    color: rgb(0, 255, 0);
+}
+
+.price.down {
+    color: rgb(255, 0, 0);
+}
+
+.price.same {
+    color: rgb(255, 255, 255);
+}
