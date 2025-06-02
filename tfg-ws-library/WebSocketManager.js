@@ -42,7 +42,7 @@ Foo.WebSocketManager = class
     */
     Start()
     {
-        this._InitialiseWebSocket();
+        this.#InitialiseWebSocket();
     }
 
     /*
@@ -50,7 +50,7 @@ Foo.WebSocketManager = class
     */
     Stop()
     {
-        this._FinaliseWebSocket();
+        this.#FinaliseWebSocket();
     }
 
     /* 
@@ -77,27 +77,27 @@ Foo.WebSocketManager = class
     /*
      *  Private method that initialises the web socket server.
     */
-    _InitialiseWebSocket()
+    #InitialiseWebSocket()
     {
-        this._FinaliseWebSocket(); // Just in case
+        this.#FinaliseWebSocket(); // Just in case
 
         this.#webSocketServer = new WebSocket.Server({ 
             host: this.#host, 
             port: this.#portNumber 
         });
 
-        this.#webSocketServer.on("connection", this._InitialiseWebSocketClient.bind(this));
+        this.#webSocketServer.on("connection", this.#InitialiseWebSocketClient.bind(this));
         
         const settings = Foo.Settings.GetInstance();
         const updateInterval = settings.GetUpdateInterval();
 
-        this.#updateIntervalId = setInterval(this._Update.bind(this), updateInterval);
+        this.#updateIntervalId = setInterval(this.#Update.bind(this), updateInterval);
     }
 
     /*
      * Private method that finalises the web socket server.
     */
-    _FinaliseWebSocket()
+    #FinaliseWebSocket()
     {
         if (this.#updateIntervalId !== -1)
         {
@@ -114,19 +114,19 @@ Foo.WebSocketManager = class
     /*
      * Private method that initialises a web socket client connection.
     */
-    _InitialiseWebSocketClient(newWebSocketClient)
+    #InitialiseWebSocketClient(newWebSocketClient)
     {
         this.#clientSubscriptionMap.set(newWebSocketClient, []);
 
-        newWebSocketClient.on("close", () => this._FinaliseWebSocketClient(newWebSocketClient));
-        newWebSocketClient.on("message", (message) => this._HandleWebSocketClientMessage(newWebSocketClient, message));
+        newWebSocketClient.on("close", () => this.#FinaliseWebSocketClient(newWebSocketClient));
+        newWebSocketClient.on("message", (message) => this.#HandleWebSocketClientMessage(newWebSocketClient, message));
         console.log('Client connected');
     }
 
     /*
      * Private method that finalises a web socket client connection.
     */
-    _FinaliseWebSocketClient(webSocketClient)
+    #FinaliseWebSocketClient(webSocketClient)
     {
         this.#clientSubscriptionMap.delete(webSocketClient);
         console.log('Client disconnected');
@@ -135,7 +135,7 @@ Foo.WebSocketManager = class
     /*
      * Private method that handles a subscribe/unsubscribe message from a web socket client.
     */
-    _HandleWebSocketClientMessage(webSocketClient, message)
+    #HandleWebSocketClientMessage(webSocketClient, message)
     {
         let parsed;
         try {
