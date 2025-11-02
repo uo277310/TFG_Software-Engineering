@@ -14,7 +14,7 @@
 
 const WebSocket = require('ws');
 
-Foo.WebSocketManager = class
+WSLibrary.WebSocketManager = class
 {
     
     #host = ""; // The host for this web socket server.
@@ -33,7 +33,7 @@ Foo.WebSocketManager = class
         this.#host = host;
         this.#portNumber = portNumber;
         this.#libraryAdapter = libraryAdapter;
-        this.#libraryStateSubscriptionManager = new Foo.LibraryStateSubscriptionManager(this, this.#libraryAdapter);
+        this.#libraryStateSubscriptionManager = new WSLibrary.LibraryStateSubscriptionManager(this, this.#libraryAdapter);
         this.#clientSubscriptionMap = new Map();
     }
 
@@ -88,7 +88,7 @@ Foo.WebSocketManager = class
 
         this.#webSocketServer.on("connection", this.#InitialiseWebSocketClient.bind(this));
         
-        const settings = Foo.Settings.GetInstance();
+        const settings = WSLibrary.Settings.GetInstance();
         const updateInterval = settings.GetUpdateInterval();
 
         this.#updateIntervalId = setInterval(this.#Update.bind(this), updateInterval);

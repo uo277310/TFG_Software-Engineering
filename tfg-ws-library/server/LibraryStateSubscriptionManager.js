@@ -12,7 +12,7 @@
  * All rights reserved.
 */
 
-Foo.LibraryStateSubscriptionManager = class
+WSLibrary.LibraryStateSubscriptionManager = class
 {
 
     #webSocketNotifier = null; // The object that knows how to send notifications to the web socket clients.
@@ -30,7 +30,7 @@ Foo.LibraryStateSubscriptionManager = class
         const stateNames = this.#libraryAdapter.GetStateNames();
 
         for (const stateName of stateNames)
-            this.#libraryStateSubscriptions[stateName] = new Foo.LibraryStateSubscription(this.#libraryAdapter, stateName);
+            this.#libraryStateSubscriptions[stateName] = new WSLibrary.LibraryStateSubscription(this.#libraryAdapter, stateName);
 
     }
 

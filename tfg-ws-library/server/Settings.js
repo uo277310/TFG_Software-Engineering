@@ -14,7 +14,7 @@
 
 const DEFAULT_UPDATE_INTERVAL = 5000; // Update interval in milliseconds
 
-Foo.Settings = class
+WSLibrary.Settings = class
 {
     
     #updateInterval = DEFAULT_UPDATE_INTERVAL; // The update interval to use when polling for state changes.
@@ -26,7 +26,7 @@ Foo.Settings = class
     */
     constructor()
     {
-        if (!Foo.Settings.sGettingInstance)
+        if (!WSLibrary.Settings.sGettingInstance)
             throw new Error("Invalid construction of Singleton class bypassing the static GetInstance method which must always be used");
     }
 
@@ -35,13 +35,13 @@ Foo.Settings = class
     */
     static GetInstance()
     {
-    if  (Foo.Settings.sInstance === null)
+    if  (WSLibrary.Settings.sInstance === null)
         {
-            Foo.Settings.sGettingInstance = true;
-            Foo.Settings.sInstance = new Foo.Settings();
-            Foo.Settings.sGettingInstance = false;
+            WSLibrary.Settings.sGettingInstance = true;
+            WSLibrary.Settings.sInstance = new WSLibrary.Settings();
+            WSLibrary.Settings.sGettingInstance = false;
         }
-        return Foo.Settings.sInstance;
+        return WSLibrary.Settings.sInstance;
     }
 
     /*

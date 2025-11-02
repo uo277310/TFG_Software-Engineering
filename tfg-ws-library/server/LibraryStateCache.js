@@ -12,7 +12,7 @@
  * All rights reserved.
 */
 
-Foo.LibraryStateCache = class
+WSLibrary.LibraryStateCache = class
 {
 
     #libraryAdapter = null; // The object that manages the interaction with the external API.

@@ -12,7 +12,7 @@
  * All rights reserved.
 */
 
-Foo.LibraryStateSubscription = class
+WSLibrary.LibraryStateSubscription = class
 {
 
     #libraryAdapter = null; // The object that manages the interaction with the external API.
@@ -61,7 +61,7 @@ Foo.LibraryStateSubscription = class
     AddSubscriber()
     {
         if (this.#numberOfSubscribers === 0)
-            this.#libraryStateCache = new Foo.LibraryStateCache(this.#libraryAdapter, this.#stateName);
+            this.#libraryStateCache = new WSLibrary.LibraryStateCache(this.#libraryAdapter, this.#stateName);
 
         ++this.#numberOfSubscribers;
     }

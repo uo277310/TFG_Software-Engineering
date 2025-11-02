@@ -12,7 +12,7 @@
  * All rights reserved.
 */
 
-require("./Foo.js");
+require("./WSLibrary.js");
 require("./Settings.js");
 require("./LibraryStateCache.js");
 require("./LibraryStateSubscription.js");
@@ -23,8 +23,8 @@ require("./WebSocketManager.js");
 const host = "localhost";
 const port = 3000;
 
-const yahooFinanceLibraryAdapter = new Foo.YahooFinanceLibraryAdapter();
-const webSocketManager = new Foo.WebSocketManager(host, port, yahooFinanceLibraryAdapter);
+const yahooFinanceLibraryAdapter = new WSLibrary.YahooFinanceLibraryAdapter();
+const webSocketManager = new WSLibrary.WebSocketManager(host, port, yahooFinanceLibraryAdapter);
 
 try {
     webSocketManager.Start();

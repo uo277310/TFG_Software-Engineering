@@ -12,7 +12,7 @@
  * All rights reserved.
 */
 
-Foo.YahooFinanceLibraryAdapter = class
+WSLibrary.YahooFinanceLibraryAdapter = class
 {
 
     #yahooFinance = null; // The object that manages the interaction with the Yahoo API.
