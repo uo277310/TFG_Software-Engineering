@@ -17,7 +17,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
 
     #webSocketNotifier = null; // The object that knows how to send notifications to the web socket clients.
     #libraryAdapter = null; // The object that manages the interaction with the external API.
-    #libraryStateSubscriptions = []; // The associative map of state identifiers and objects that support the subscriptions for each individual state. 
+    #libraryStateSubscriptions = new Map(); // The associative map of state identifiers and objects that support the subscriptions for each individual state. 
 
     /*
      * This is the constructor of the class.
@@ -30,7 +30,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
         const stateNames = this.#libraryAdapter.GetStateNames();
 
         for (const stateName of stateNames)
-            this.#libraryStateSubscriptions[stateName] = new WSLibrary.LibraryStateSubscription(this.#libraryAdapter, stateName);
+            this.#libraryStateSubscriptions.set(stateName, new WSLibrary.LibraryStateSubscription(this.#libraryAdapter, stateName));
 
     }
 
@@ -41,7 +41,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
     {
         // We iterate through all the subscription objects. There is no need to keep a list of active ones 
         // (skipping those without any subscribers) because the subscription objects will do nothing when there are no subscribers.
-        for (const [stateName, libraryStateSubscription] of Object.entries(this.#libraryStateSubscriptions))
+        for (const [stateName, libraryStateSubscription] of this.#libraryStateSubscriptions)
         {
             try {
                 const changed = libraryStateSubscription.Update();
@@ -61,7 +61,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
     */
     AddSubscriber(stateName)
     {
-        const libraryStateSubscription = this.#libraryStateSubscriptions[stateName];
+        const libraryStateSubscription = this.#libraryStateSubscriptions.get(stateName);
 
         if (libraryStateSubscription)
             libraryStateSubscription.AddSubscriber();
@@ -74,7 +74,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
     */
     RemoveSubscriber(stateName)
     {
-        const libraryStateSubscription = this.#libraryStateSubscriptions[stateName];
+        const libraryStateSubscription = this.#libraryStateSubscriptions.get(stateName);
 
         if (libraryStateSubscription)
             libraryStateSubscription.RemoveSubscriber();
