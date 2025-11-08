@@ -42,7 +42,7 @@ WSLibrary.LibraryStateSubscriptionIterator = class
 
     Next()
     {
-        const kMaximumNumberOfIterations = 100; // TO DO: esto puede ir en una constante fuera, arriba del fichero.
+        const kMaximumNumberOfIterations = 100;
         const maximumIndex = this.#currentIndex + kMaximumNumberOfIterations;
         for(let index = this.#currentIndex; this.#currentIndex < this.#states.length && index < maximumIndex; ++index) {
             this.#UpdateState(index);
