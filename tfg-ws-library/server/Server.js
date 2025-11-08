@@ -16,6 +16,7 @@ require("./WSLibrary.js");
 require("./Settings.js");
 require("./LibraryStateCache.js");
 require("./LibraryStateSubscription.js");
+require("./LibraryStateSubscriptionIterator.js");
 require("./LibraryStateSubscriptionManager.js");
 require("./YahooFinanceLibraryAdapter.js");
 require("./WebSocketManager.js");

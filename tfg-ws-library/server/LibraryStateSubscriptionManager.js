@@ -18,6 +18,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
     #webSocketNotifier = null; // The object that knows how to send notifications to the web socket clients.
     #libraryAdapter = null; // The object that manages the interaction with the external API.
     #libraryStateSubscriptions = new Map(); // The associative map of state identifiers and objects that support the subscriptions for each individual state. 
+    #libraryStateSubscriptionIterator = null; // Object that will handle the update logic of the iteration over states and subscribers
 
     /*
      * This is the constructor of the class.
@@ -32,6 +33,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
         for (const stateName of stateNames)
             this.#libraryStateSubscriptions.set(stateName, new WSLibrary.LibraryStateSubscription(this.#libraryAdapter, stateName));
 
+        this.#libraryStateSubscriptionIterator = new WSLibrary.LibraryStateSubscriptionIterator(this.#webSocketNotifier, this.#libraryStateSubscriptions);
     }
 
     /*
@@ -39,21 +41,9 @@ WSLibrary.LibraryStateSubscriptionManager = class
     */
     async Update()
     {
-        // We iterate through all the subscription objects. There is no need to keep a list of active ones 
-        // (skipping those without any subscribers) because the subscription objects will do nothing when there are no subscribers.
-        for (const [stateName, libraryStateSubscription] of this.#libraryStateSubscriptions)
-        {
-            try {
-                const changed = libraryStateSubscription.Update();
-                if (changed)
-                {
-                    const latestValue = await libraryStateSubscription.GetLatestValue();
-                    this.#webSocketNotifier.SendNotification(stateName, latestValue);
-                }
-            } catch (error) {
-                console.error(`Error updating the ${stateName} state:`, error);
-            }
-        }
+        if (this.#libraryStateSubscriptionIterator.IsDone())
+            this.#libraryStateSubscriptionIterator.Reset();
+        this.#libraryStateSubscriptionIterator.Next();
     }
 
     /*
