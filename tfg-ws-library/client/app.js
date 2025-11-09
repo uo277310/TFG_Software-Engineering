@@ -101,21 +101,21 @@ function getNextAvailableCategory(currentCategory) {
     const categories = ['stocks', 'crypto', 'forex'];
     // Get the index of the current category
     const currentIndex = categories.indexOf(currentCategory);
-    
+
     // Look for available symbols in the categories after the current one
     for (let i = currentIndex + 1; i < categories.length; i++) {
         if (symbolsByCategory[categories[i]].some(symbol => !subscribedSymbols.includes(symbol))) {
             return categories[i];
         }
     }
-    
+
     // If none found, search from the beginning to the current category
     for (let i = 0; i < currentIndex; i++) {
         if (symbolsByCategory[categories[i]].some(symbol => !subscribedSymbols.includes(symbol))) {
             return categories[i];
         }
     }
-    
+
     // Return null if no available category is found
     return null;
 }
@@ -331,8 +331,8 @@ function updateChart(chart, newPrice, symbol) {
 
     // Assign color based on trend
     const pointColor = trend === 'up' ? 'rgb(0, 255, 0)' :
-                       trend === 'down' ? 'rgb(255, 80, 80)' :
-                       'rgb(175, 175, 175)';
+        trend === 'down' ? 'rgb(255, 80, 80)' :
+            'rgb(175, 175, 175)';
 
     dataset.pointBackgroundColor = data.map(() => pointColor);
     dataset.pointBorderColor = data.map(() => pointColor);
@@ -480,7 +480,7 @@ function toggleTheme() {
         }
         chart.update('none');
     });
-    
+
     // Force the subscribe button and the theme toggle button text to white regardless of theme.
     const subscribeBtn = document.getElementById('subscribeBtn');
     if (subscribeBtn) {

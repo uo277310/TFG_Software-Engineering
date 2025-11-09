@@ -11,16 +11,14 @@
  * Version: 1.0
  * All rights reserved.
 */
-WSLibrary.LibraryStateSubscriptionIterator = class
-{
+WSLibrary.LibraryStateSubscriptionIterator = class {
 
     #webSocketNotifier = null; // The object that knows how to send notifications to the web socket clients. 
     #libraryStateSubscriptions = null; // The map to iterate over
     #states = []; // An array that stores a cached copy of the keys in the map above (assumed to be constant while this iterator object is being used)
     #currentIndex = 0; // The current iteration index
 
-    constructor(webSocketNotifier, libraryStateSubscriptions)
-    {
+    constructor(webSocketNotifier, libraryStateSubscriptions) {
         // Parameter validation
         if (typeof webSocketNotifier !== 'object' || webSocketNotifier === null)
             throw new TypeError("webSocketNotifier must be a non-null object that implements SendNotification(stateName, newValue)");
@@ -36,45 +34,40 @@ WSLibrary.LibraryStateSubscriptionIterator = class
 
         this.#webSocketNotifier = webSocketNotifier;
         this.#libraryStateSubscriptions = libraryStateSubscriptions;
-        this.#states = Array.from(this.#libraryStateSubscriptions.keys()); 
+        this.#states = Array.from(this.#libraryStateSubscriptions.keys());
         this.#currentIndex = 0;
     }
 
-    Next()
-    {
+    Next() {
         const kMaximumNumberOfIterations = 100;
         const maximumIndex = this.#currentIndex + kMaximumNumberOfIterations;
-        for(let index = this.#currentIndex; this.#currentIndex < this.#states.length && index < maximumIndex; ++index) {
+        for (let index = this.#currentIndex; this.#currentIndex < this.#states.length && index < maximumIndex; ++index) {
             this.#UpdateState(index);
             ++this.#currentIndex;
         }
     }
 
-    IsDone()
-    {
+    IsDone() {
         return this.#currentIndex === this.#states.length;
     }
 
-    Reset()
-    {
+    Reset() {
         this.#currentIndex = 0;
     }
 
-    async #UpdateState(index)
-    {
-        const stateName =  this.#states[index];
-        const libraryStateSubscription =  this.#libraryStateSubscriptions.get(stateName);
+    async #UpdateState(index) {
+        const stateName = this.#states[index];
+        const libraryStateSubscription = this.#libraryStateSubscriptions.get(stateName);
 
         try {
-                const changed = libraryStateSubscription.Update();
-                if (changed)
-                {
-                    const latestValue = await libraryStateSubscription.GetLatestValue();
-                    this.#webSocketNotifier.SendNotification(stateName, latestValue);
-                }
-            } catch (error) {
-                console.error(`Error updating the ${stateName} state:`, error);
+            const changed = libraryStateSubscription.Update();
+            if (changed) {
+                const latestValue = await libraryStateSubscription.GetLatestValue();
+                this.#webSocketNotifier.SendNotification(stateName, latestValue);
             }
+        } catch (error) {
+            console.error(`Error updating the ${stateName} state:`, error);
+        }
     }
 
 };

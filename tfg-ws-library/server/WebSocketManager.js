@@ -14,9 +14,8 @@
 
 const WebSocket = require('ws');
 
-WSLibrary.WebSocketManager = class
-{
-    
+WSLibrary.WebSocketManager = class {
+
     #host = ""; // The host for this web socket server.
     #portNumber = ""; // The port number for this web socket server.
     #libraryAdapter = null; // The object that manages the interaction with the external API.
@@ -28,8 +27,7 @@ WSLibrary.WebSocketManager = class
     /*
      * This is the constructor of the class.
     */
-    constructor(host, portNumber, libraryAdapter)
-    {
+    constructor(host, portNumber, libraryAdapter) {
         this.#host = host;
         this.#portNumber = portNumber;
         this.#libraryAdapter = libraryAdapter;
@@ -40,24 +38,21 @@ WSLibrary.WebSocketManager = class
     /*
      * Method that starts the web socket server.
     */
-    Start()
-    {
+    Start() {
         this.#InitialiseWebSocket();
     }
 
     /*
      * Method that stops the web socket server.
     */
-    Stop()
-    {
+    Stop() {
         this.#FinaliseWebSocket();
     }
 
     /* 
      * Method required by the "WebSocketNotifier" interface that LibraryStateSubscriptionManager requires as a construction parameter.
     */
-    SendNotification(stateName, newValue)
-    {
+    SendNotification(stateName, newValue) {
         this.#clientSubscriptionMap.forEach((subscribedStateNames, webSocketClient) => {
             // Verify that the client is open before shipping
             if (webSocketClient.readyState === WebSocket.OPEN && subscribedStateNames.includes(stateName))
@@ -68,8 +63,7 @@ WSLibrary.WebSocketManager = class
     /* 
      * Private method that updates the subscriptions.
     */
-    async #Update() 
-    {
+    async #Update() {
         if (this.#libraryStateSubscriptionManager)
             await this.#libraryStateSubscriptionManager.Update();
     }
@@ -77,17 +71,16 @@ WSLibrary.WebSocketManager = class
     /*
      *  Private method that initialises the web socket server.
     */
-    #InitialiseWebSocket()
-    {
+    #InitialiseWebSocket() {
         this.#FinaliseWebSocket(); // Just in case
 
-        this.#webSocketServer = new WebSocket.Server({ 
-            host: this.#host, 
-            port: this.#portNumber 
+        this.#webSocketServer = new WebSocket.Server({
+            host: this.#host,
+            port: this.#portNumber
         });
 
         this.#webSocketServer.on("connection", this.#InitialiseWebSocketClient.bind(this));
-        
+
         const settings = WSLibrary.Settings.GetInstance();
         const updateInterval = settings.GetUpdateInterval();
 
@@ -97,10 +90,8 @@ WSLibrary.WebSocketManager = class
     /*
      * Private method that finalises the web socket server.
     */
-    #FinaliseWebSocket()
-    {
-        if (this.#updateIntervalId !== -1)
-        {
+    #FinaliseWebSocket() {
+        if (this.#updateIntervalId !== -1) {
             clearInterval(this.#updateIntervalId);
             this.#updateIntervalId = -1;
         }
@@ -114,8 +105,7 @@ WSLibrary.WebSocketManager = class
     /*
      * Private method that initialises a web socket client connection.
     */
-    #InitialiseWebSocketClient(newWebSocketClient)
-    {
+    #InitialiseWebSocketClient(newWebSocketClient) {
         this.#clientSubscriptionMap.set(newWebSocketClient, []);
 
         newWebSocketClient.on("close", () => this.#FinaliseWebSocketClient(newWebSocketClient));
@@ -126,8 +116,7 @@ WSLibrary.WebSocketManager = class
     /*
      * Private method that finalises a web socket client connection.
     */
-    #FinaliseWebSocketClient(webSocketClient)
-    {
+    #FinaliseWebSocketClient(webSocketClient) {
         this.#clientSubscriptionMap.delete(webSocketClient);
         console.log('Client disconnected');
     }
@@ -135,13 +124,12 @@ WSLibrary.WebSocketManager = class
     /*
      * Private method that handles a subscribe/unsubscribe message from a web socket client.
     */
-    #HandleWebSocketClientMessage(webSocketClient, message)
-    {
+    #HandleWebSocketClientMessage(webSocketClient, message) {
         let parsed;
         try {
             // Attempt to parse the incoming message as JSON
             parsed = JSON.parse(message);
-        } catch(e) {
+        } catch (e) {
             console.error("Error parsing message: ", e);
             return;
         }
@@ -153,20 +141,17 @@ WSLibrary.WebSocketManager = class
             return;
         }
 
-        if (action === "subscribe")
-        {
+        if (action === "subscribe") {
             // Avoid duplicates
             const subscriptions = this.#clientSubscriptionMap.get(webSocketClient) || [];
-            if (!subscriptions.includes(stateName))
-            {
+            if (!subscriptions.includes(stateName)) {
                 subscriptions.push(stateName);
                 this.#clientSubscriptionMap.set(webSocketClient, subscriptions);
                 // Notify the subscription manager that a new state has been subscribed
                 this.#libraryStateSubscriptionManager.AddSubscriber(stateName);
             }
         }
-        else if (action === "unsubscribe")
-        {
+        else if (action === "unsubscribe") {
             const subscriptions = this.#clientSubscriptionMap.get(webSocketClient) || [];
             const index = subscriptions.indexOf(stateName);
             if (index > -1) {

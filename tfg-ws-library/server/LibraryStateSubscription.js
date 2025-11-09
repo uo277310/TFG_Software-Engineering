@@ -12,8 +12,7 @@
  * All rights reserved.
 */
 
-WSLibrary.LibraryStateSubscription = class
-{
+WSLibrary.LibraryStateSubscription = class {
 
     #libraryAdapter = null; // The object that manages the interaction with the external API.
     #stateName = ""; // The text identifier of the state that this cache object stores.
@@ -23,8 +22,7 @@ WSLibrary.LibraryStateSubscription = class
     /*
      * This is the constructor of the class.
     */
-    constructor(libraryAdapter, stateName)
-    {
+    constructor(libraryAdapter, stateName) {
         this.#libraryAdapter = libraryAdapter;
         this.#stateName = stateName;
     }
@@ -33,8 +31,7 @@ WSLibrary.LibraryStateSubscription = class
      * Method that updates the cached value if there are any subscribers.
      * It returns true if there has been a change in value and the web socket clients must be notified.
     */
-    async Update()
-    {
+    async Update() {
         let valueChanged = false;
 
         if (this.#numberOfSubscribers > 0)
@@ -46,8 +43,7 @@ WSLibrary.LibraryStateSubscription = class
     /*
      * Method that returns the latest value.
     */
-    async GetLatestValue()
-    {
+    async GetLatestValue() {
         let latestValue = null;
         if (this.#numberOfSubscribers > 0 && this.#libraryStateCache)
             latestValue = await this.#libraryStateCache.GetLatestValue();
@@ -58,8 +54,7 @@ WSLibrary.LibraryStateSubscription = class
     /*
      * Method that adds a subscriber.
     */
-    AddSubscriber()
-    {
+    AddSubscriber() {
         if (this.#numberOfSubscribers === 0)
             this.#libraryStateCache = new WSLibrary.LibraryStateCache(this.#libraryAdapter, this.#stateName);
 
@@ -69,8 +64,7 @@ WSLibrary.LibraryStateSubscription = class
     /*
      * Method that removes a subscriber.
     */
-    RemoveSubscriber()
-    {
+    RemoveSubscriber() {
         if (this.#numberOfSubscribers > 0) {
             --this.#numberOfSubscribers;
             if (this.#numberOfSubscribers === 0)

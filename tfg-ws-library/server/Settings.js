@@ -14,9 +14,8 @@
 
 const DEFAULT_UPDATE_INTERVAL = 5000; // Update interval in milliseconds
 
-WSLibrary.Settings = class
-{
-    
+WSLibrary.Settings = class {
+
     #updateInterval = DEFAULT_UPDATE_INTERVAL; // The update interval to use when polling for state changes.
     static sInstance = null; // The only instance of the class.
     static sGettingInstance = false; // A Boolean flag to assert that the object is always constructed from within the GetInstance static method.
@@ -24,8 +23,7 @@ WSLibrary.Settings = class
     /*
      * This is the constructor of the class.
     */
-    constructor()
-    {
+    constructor() {
         if (!WSLibrary.Settings.sGettingInstance)
             throw new Error("Invalid construction of Singleton class bypassing the static GetInstance method which must always be used");
     }
@@ -33,10 +31,8 @@ WSLibrary.Settings = class
     /* 
      * This is the singleton's GetInstance method that provides access to the only object of this type.
     */
-    static GetInstance()
-    {
-    if  (WSLibrary.Settings.sInstance === null)
-        {
+    static GetInstance() {
+        if (WSLibrary.Settings.sInstance === null) {
             WSLibrary.Settings.sGettingInstance = true;
             WSLibrary.Settings.sInstance = new WSLibrary.Settings();
             WSLibrary.Settings.sGettingInstance = false;
@@ -47,8 +43,7 @@ WSLibrary.Settings = class
     /*
      * Accessor that sets the update interval.
     */
-    SetUpdateInterval(updateInterval)
-    {
+    SetUpdateInterval(updateInterval) {
         if (typeof updateInterval !== 'number' || updateInterval <= 0)
             throw new Error("El update interval debe ser un número positivo.");
         this.#updateInterval = updateInterval;
@@ -57,8 +52,7 @@ WSLibrary.Settings = class
     /*
      * Accessor that gets the update interval.
     */
-    GetUpdateInterval()
-    {
+    GetUpdateInterval() {
         return this.#updateInterval;
     }
 

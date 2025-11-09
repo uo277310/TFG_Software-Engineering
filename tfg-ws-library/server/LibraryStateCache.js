@@ -12,8 +12,7 @@
  * All rights reserved.
 */
 
-WSLibrary.LibraryStateCache = class
-{
+WSLibrary.LibraryStateCache = class {
 
     #libraryAdapter = null; // The object that manages the interaction with the external API.
     #stateName = ""; // The text identifier of the state that this cache object stores.
@@ -22,8 +21,7 @@ WSLibrary.LibraryStateCache = class
     /*
      * This is the constructor of the class.
     */
-    constructor(libraryAdapter, stateName)
-    {
+    constructor(libraryAdapter, stateName) {
         this.#libraryAdapter = libraryAdapter;
         this.#stateName = stateName;
 
@@ -33,8 +31,7 @@ WSLibrary.LibraryStateCache = class
     /*
      * Method that updates the value, replacing the latest value and returning true if the value has changed.
     */
-    async UpdateValue()
-    {
+    async UpdateValue() {
         try {
             const currentStateValue = await this.#libraryAdapter.GetStateValue(this.#stateName);
             const valueChanged = (currentStateValue !== this.#latestValue);
@@ -51,8 +48,7 @@ WSLibrary.LibraryStateCache = class
     /*
      * Method that returns the latest value.
     */
-    async GetLatestValue()
-    {
+    async GetLatestValue() {
         return this.#latestValue;
     }
 

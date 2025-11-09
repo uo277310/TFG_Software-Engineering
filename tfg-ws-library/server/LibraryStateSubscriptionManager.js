@@ -12,8 +12,7 @@
  * All rights reserved.
 */
 
-WSLibrary.LibraryStateSubscriptionManager = class
-{
+WSLibrary.LibraryStateSubscriptionManager = class {
 
     #webSocketNotifier = null; // The object that knows how to send notifications to the web socket clients.
     #libraryAdapter = null; // The object that manages the interaction with the external API.
@@ -23,8 +22,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
     /*
      * This is the constructor of the class.
     */
-    constructor(webSocketNotifier, libraryAdapter)
-    {
+    constructor(webSocketNotifier, libraryAdapter) {
         this.#webSocketNotifier = webSocketNotifier;
         this.#libraryAdapter = libraryAdapter;
 
@@ -39,8 +37,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
     /*
      * Method that updates all the values checking for changes and notifying the web socket clients when a change is detected.
     */
-    async Update()
-    {
+    async Update() {
         if (this.#libraryStateSubscriptionIterator.IsDone())
             this.#libraryStateSubscriptionIterator.Reset();
         this.#libraryStateSubscriptionIterator.Next();
@@ -49,8 +46,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
     /*
      * Method that adds a subscriber for a particular supported state.
     */
-    AddSubscriber(stateName)
-    {
+    AddSubscriber(stateName) {
         const libraryStateSubscription = this.#libraryStateSubscriptions.get(stateName);
 
         if (libraryStateSubscription)
@@ -62,8 +58,7 @@ WSLibrary.LibraryStateSubscriptionManager = class
     /*
      * Method that removes a subscriber.
     */
-    RemoveSubscriber(stateName)
-    {
+    RemoveSubscriber(stateName) {
         const libraryStateSubscription = this.#libraryStateSubscriptions.get(stateName);
 
         if (libraryStateSubscription)
