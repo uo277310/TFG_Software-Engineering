@@ -12,8 +12,9 @@
  * All rights reserved.
  */
 
-// Initialize WebSocket connection to the server
-const ws = new WebSocket('ws://localhost:3000');
+// Initialize WSLibrary
+const webSocketSubscriptionManager = WSLibrary.WebSocketSubscriptionManager.GetInstance();
+webSocketSubscriptionManager.InitializeWebSocket('localhost', 3000);
 
 const activeWebSocketSubscriptions = new Map(); // An associative map of 'state names' and subscription objects
 
@@ -182,11 +183,9 @@ function subscribe() {
 
         // Notify server via WebSocket
         console.log(`Suscribiendo a ${symbol}`);
-        if (!activeWebSocketSubscriptions.has(symbol)) // Just in case; it should be false
-        {
-            const newActiveWebSocketSubscription = new WSLibrary.WebSocketSubscription(ws, webSocketNotificationHandler, symbol);
-            activeWebSocketSubscriptions.set(symbol, newActiveWebSocketSubscription);
-        }
+
+        webSocketSubscriptionManager.AcquireSubscription(webSocketNotificationHandler, symbol);
+
         logToConsole(`🔔 Suscripción a ${symbol}`);
         createPriceSection(symbol, category);
     }
@@ -391,23 +390,19 @@ function updateChart(chart, newPrice, symbol) {
 // Handles unsubscription and UI cleanup
 function unsubscribe(symbol) {
     if (priceHistory[symbol]) {
-        if (activeWebSocketSubscriptions.has(symbol)) {
-            symbolWebSocketSubscription = activeWebSocketSubscriptions.get(symbol);
-            symbolWebSocketSubscription.Unsubscribe();
-            activeWebSocketSubscriptions.delete(symbol);
-            logToConsole(`❌ Desuscrito de ${symbol}`);
-            delete priceHistory[symbol];
-            const section = document.getElementById(`section-${symbol}`);
-            if (section) section.remove();
+        webSocketSubscriptionManager.ReleaseSubscription(symbol);
+        logToConsole(`❌ Desuscrito de ${symbol}`);
+        delete priceHistory[symbol];
+        const section = document.getElementById(`section-${symbol}`);
+        if (section) section.remove();
 
-            // Remove from the subscribed list
-            subscribedSymbols = subscribedSymbols.filter(s => s !== symbol);
+        // Remove from the subscribed list
+        subscribedSymbols = subscribedSymbols.filter(s => s !== symbol);
 
-            // Refresh dropdowns and UI state
-            updateCategoryOptions(); // Refresh category options
-            updateSymbolOptions();   // Update available symbols
-            updateSubscriptionUIState(); // Update UI state
-        }
+        // Refresh dropdowns and UI state
+        updateCategoryOptions(); // Refresh category options
+        updateSymbolOptions();   // Update available symbols
+        updateSubscriptionUIState(); // Update UI state
     }
 }
 
