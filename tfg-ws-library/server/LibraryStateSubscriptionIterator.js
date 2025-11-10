@@ -60,7 +60,8 @@ WSLibrary.LibraryStateSubscriptionIterator = class {
         const libraryStateSubscription = this.#libraryStateSubscriptions.get(stateName);
 
         try {
-            const changed = libraryStateSubscription.Update();
+            // Await the async Update() result so we only notify when the value actually changed.
+            const changed = await libraryStateSubscription.Update();
             if (changed) {
                 const latestValue = await libraryStateSubscription.GetLatestValue();
                 this.#webSocketNotifier.SendNotification(stateName, latestValue);

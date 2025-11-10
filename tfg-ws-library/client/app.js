@@ -15,6 +15,8 @@
 // Initialize WebSocket connection to the server
 const ws = new WebSocket('ws://localhost:3000');
 
+const activeWebSocketSubscriptions = new Map(); // An associative map of 'state names' and subscription objects
+
 // Stores price history and chart references
 const priceHistory = {};
 
@@ -180,8 +182,11 @@ function subscribe() {
 
         // Notify server via WebSocket
         console.log(`Suscribiendo a ${symbol}`);
-        console.log(JSON.stringify({ action: 'subscribe', stateName: symbol }));
-        ws.send(JSON.stringify({ action: 'subscribe', stateName: symbol }));
+        if (!activeWebSocketSubscriptions.has(symbol)) // Just in case; it should be false
+        {
+            const newActiveWebSocketSubscription = new WSLibrary.WebSocketSubscription(ws, webSocketNotificationHandler, symbol);
+            activeWebSocketSubscriptions.set(symbol, newActiveWebSocketSubscription);
+        }
         logToConsole(`🔔 Suscripción a ${symbol}`);
         createPriceSection(symbol, category);
     }
@@ -246,14 +251,20 @@ function createPriceSection(symbol, category) {
 }
 
 // Handle incoming messages from the WebSocket
-ws.onmessage = (event) => {
-    console.log(`Mensaje recibido: ${event.data}`);
-    const { stateName, newValue } = JSON.parse(event.data);
-    if (priceHistory[stateName]) {
-        updateChart(priceHistory[stateName].chart, newValue, stateName);
-        logToConsole(`📥 Precio actualizado para ${stateName}: $${newValue}`);
+class MyWebSocketNotificationHandler {
+    constructor() {
     }
-};
+
+    // This method is part of the interface that WSLibrary.WebSocketSubscription requires
+    NotifyWebSocketMessage(stateName, newValue) {
+        if (priceHistory[stateName]) {
+            updateChart(priceHistory[stateName].chart, newValue, stateName);
+            logToConsole(`📥 Precio actualizado para ${stateName}: $${newValue}`);
+        }
+    };
+}
+
+const webSocketNotificationHandler = new MyWebSocketNotificationHandler();
 
 // Creates and configures a Chart.js chart for a symbol
 function createChart(symbol) {
@@ -380,19 +391,23 @@ function updateChart(chart, newPrice, symbol) {
 // Handles unsubscription and UI cleanup
 function unsubscribe(symbol) {
     if (priceHistory[symbol]) {
-        ws.send(JSON.stringify({ action: 'unsubscribe', stateName: symbol }));
-        logToConsole(`❌ Desuscrito de ${symbol}`);
-        delete priceHistory[symbol];
-        const section = document.getElementById(`section-${symbol}`);
-        if (section) section.remove();
+        if (activeWebSocketSubscriptions.has(symbol)) {
+            symbolWebSocketSubscription = activeWebSocketSubscriptions.get(symbol);
+            symbolWebSocketSubscription.Unsubscribe();
+            activeWebSocketSubscriptions.delete(symbol);
+            logToConsole(`❌ Desuscrito de ${symbol}`);
+            delete priceHistory[symbol];
+            const section = document.getElementById(`section-${symbol}`);
+            if (section) section.remove();
 
-        // Remove from the subscribed list
-        subscribedSymbols = subscribedSymbols.filter(s => s !== symbol);
+            // Remove from the subscribed list
+            subscribedSymbols = subscribedSymbols.filter(s => s !== symbol);
 
-        // Refresh dropdowns and UI state
-        updateCategoryOptions(); // Refresh category options
-        updateSymbolOptions();   // Update available symbols
-        updateSubscriptionUIState(); // Update UI state
+            // Refresh dropdowns and UI state
+            updateCategoryOptions(); // Refresh category options
+            updateSymbolOptions();   // Update available symbols
+            updateSubscriptionUIState(); // Update UI state
+        }
     }
 }
 
